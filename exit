@@ -1,0 +1,128 @@
+[33mcommit 6c5f517c7615a63b99940e55856e0543fdc4ae8a[m[33m ([m[1;36mHEAD -> [m[1;32mmaster[m[33m, [m[1;31mbuddy-bot/master[m[33m)[m
+Author: Gloria <rwandagloria@gmail.com>
+Date:   Sun Dec 10 21:07:19 2023 +0100
+
+    Added new codebase
+
+[33mcommit a5856f1ac9d1d2e856e799018d4de1e7c877d6ad[m
+Author: Gloria <rwandagloria@gmail.com>
+Date:   Sat Dec 9 13:30:45 2023 +0100
+
+    fixed bugs
+
+[33mcommit 8976ccafd1e2b1b2ada2bbec394bc91c72b513c7[m
+Author: Gloria <rwandagloria@gmail.com>
+Date:   Thu Dec 7 20:13:13 2023 +0100
+
+    Okay!
+
+[33mcommit 9700bb94800fa901683282fc9f7a5194461dcfd8[m
+Author: Gloria <rwandagloria@gmail.com>
+Date:   Thu Dec 7 19:31:42 2023 +0100
+
+    Added and changed phone validator
+
+[33mcommit 2939d1f4b61db0a597eef22f21441e27599c8593[m
+Merge: 9a9e0d7 d5f362f
+Author: Gloria <rwandagloria@gmail.com>
+Date:   Mon Dec 4 17:55:36 2023 +0100
+
+    Merge branch 'master' of https://github.com/RwandaGloria/buddybot-WACloudApi
+
+[33mcommit 9a9e0d7ab5fe25a7f41fe04c5213ff0bf2e60d47[m
+Author: Gloria <rwandagloria@gmail.com>
+Date:   Mon Dec 4 17:55:15 2023 +0100
+
+    changed crons file
+
+[33mcommit d5f362f2e1810782f04353fc85cc842febc222f4[m
+Author: Gloria Solomon <37818301+RwandaGloria@users.noreply.github.com>
+Date:   Mon Dec 4 17:27:28 2023 +0100
+
+    Delete private directory
+
+[33mcommit 18fec9866646d86313b7dfb4f1cb98779d9787b1[m
+Author: Gloria Solomon <37818301+RwandaGloria@users.noreply.github.com>
+Date:   Mon Dec 4 17:27:13 2023 +0100
+
+    Delete logs directory
+
+[33mcommit 52074c18eaa216bd15effc66319051c5966bcfc8[m
+Author: Gloria <rwandagloria@gmail.com>
+Date:   Mon Dec 4 17:23:43 2023 +0100
+
+    Giveaway feature working!
+
+[33mcommit 6de10d7e28eb68910a65082424e70cba63ff5361[m
+Author: Gloria <rwandagloria@gmail.com>
+Date:   Mon Dec 4 13:51:55 2023 +0100
+
+    Added security fixes, rate limiting
+
+[33mcommit 20ff682fd26070a3f682a5628946550c624c10e3[m
+Merge: 8f8377d f43e225
+Author: Gloria <rwandagloria@gmail.com>
+Date:   Thu Nov 30 23:02:03 2023 +0100
+
+    Merge branch 'master' of https://github.com/RwandaGloria/buddybot-WACloudApi
+
+[33mcommit 8f8377df3029f7c4e13745867237c08b9aeeffd4[m
+Author: Gloria <rwandagloria@gmail.com>
+Date:   Thu Nov 30 23:01:47 2023 +0100
+
+    Updated
+
+[33mcommit 1095ef18cbd7177a6e93be20034fbfc10b8561de[m
+Author: Gloria <rwandagloria@gmail.com>
+Date:   Mon Nov 27 12:53:54 2023 +0100
+
+    added
+
+[33mcommit f43e2252e4ad95ff56ab09b6f287e171a32dfb27[m
+Author: Gloria Solomon <37818301+RwandaGloria@users.noreply.github.com>
+Date:   Mon Nov 27 11:04:57 2023 +0100
+
+    Update exp-server.pem
+
+[33mcommit 50bafbb64848d273e20251238056693daac7521f[m
+Author: Gloria <rwandagloria@gmail.com>
+Date:   Mon Nov 27 11:00:21 2023 +0100
+
+    Added and cleaned 9mobile plan, as well as MTN plan, and other things
+
+[33mcommit efa16f83a177fd26195daec9fcd1d235fca06fe7[m
+Merge: e6ae049 c0eee9b
+Author: Gloria <rwandagloria@gmail.com>
+Date:   Thu Nov 23 01:46:01 2023 +0100
+
+    Working codebase
+
+[33mcommit e6ae0493520031ecce6a4c2639d4b78e53088c82[m
+Author: Gloria <rwandagloria@gmail.com>
+Date:   Thu Nov 23 01:44:56 2023 +0100
+
+    Working codebase
+
+[33mcommit c0eee9b76275d3de71561104791040324c14e63f[m
+Author: Gloria Solomon <37818301+RwandaGloria@users.noreply.github.com>
+Date:   Tue Nov 21 23:01:24 2023 +0100
+
+    Delete logs/error.log
+
+[33mcommit 1eb34eb62e4bd920a84f9299443485596be18b3f[m
+Author: Gloria Solomon <37818301+RwandaGloria@users.noreply.github.com>
+Date:   Tue Nov 21 23:01:05 2023 +0100
+
+    Delete logs/combined.log
+
+[33mcommit fcef0565d59222aacae049e68d6115827e8b9aa3[m
+Author: Gloria <rwandagloria@gmail.com>
+Date:   Tue Nov 21 21:00:44 2023 +0100
+
+    code
+
+[33mcommit e22b1d38bf161f67e6ee6b69c369915f26ac6e73[m
+Author: Gloria <rwandagloria@gmail.com>
+Date:   Tue Nov 7 11:22:29 2023 +0100
+
+    Expenditures Buddy Bot with Whatsapp Cloud API
