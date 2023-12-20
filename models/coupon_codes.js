@@ -79,5 +79,5 @@ const CouponCodeSchema = new Schema({
     required: false,
   },
 });
-const couponCodes = mongoose.model('couponCodes', CouponCodeSchema);
+const couponCodes = mongoose.model('couponCodes_telegram', CouponCodeSchema);
 module.exports = couponCodes;

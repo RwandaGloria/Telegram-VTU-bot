@@ -29,5 +29,5 @@ const userSchema = new Schema({
   },
 
 });
-const User = mongoose.model('User', userSchema);
+const User = mongoose.model('User_Telegram', userSchema);
 module.exports = User;

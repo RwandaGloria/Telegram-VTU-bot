@@ -49,5 +49,5 @@ const linksSchema = new Schema({
     default: false,
   },
 });
-const links = mongoose.model('links', linksSchema);
+const links = mongoose.model('links_telegram', linksSchema);
 module.exports = links;
