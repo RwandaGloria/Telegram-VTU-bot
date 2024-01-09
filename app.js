@@ -28,6 +28,7 @@ const app = express();
 const PORT = 9021;
 const e = require('express');
 const { default: helmet } = require('helmet');
+const { error } = require('winston');
 const Users = require('./models/users');
 const db = require('./db');
 const user_prompts = require('./routes/user_prompts');
@@ -40,10 +41,13 @@ app.use(helmet());
 const Transaction = require('./models/transactions');
 const regularPrices = require('./models/regular_prices');
 const businessPrices = require('./models/business_prices');
+const responseMsgs = require('./constants');
 
 const utils = require('./utils');
 const logger = require('./logger');
 const couponCodes = require('./models/coupon_codes');
+
+const { TELEGRAM_BOT_USERNAME } = process.env;
 
 const MY_BUSINESS_NAME = 'Expenditures Buddy';
 // Initialize your database connection and other necessary setup...
@@ -186,73 +190,53 @@ let userState;
         if (!user) {
           const createUser = await Users.create({ phone: whatsappUserNumber, walletBalance: 0, userType: 'regular' });
         }
-        if ((msg.text).includes('gifted')) {
-          const couponCodeMatch = msg.text.match(/is\s*(\S{30})/);
-
+        const regexPattern = /^\/start\s*([A-Za-z0-9]{5})/;
+        const phoneNoRegexPattern = /-(\d+)/;
+        if ((msg.text).includes('/start')) {
+          const couponCodeMatch = msg.text.match(regexPattern);
           if (couponCodeMatch) {
-            const phoneNumberMatch = msg.text.match(/\d+/);
-            couponCode = couponCodeMatch[1];
-            if (phoneNumberMatch) {
-              dataSharePhoneNumber = phoneNumberMatch[0];
-            } else if (!phoneNumberMatch) {
-              await bot.sendMessage(whatsappUserNumber, 'Invalid phone number!');
+            const couponCode = couponCodeMatch[1];
+            const findCoupon = await utils.findCoupon(couponCode);
+            if (findCoupon.isUsed === true) {
+              await bot.sendMessage(whatsappUserNumber, 'This coupon has already been used!');
               userState = 'START';
               userStates.set(whatsappUserNumber, userState);
-            }
-            const findCoupon = await utils.findCoupon(couponCode, dataSharePhoneNumber);
-            if (findCoupon) {
-              if (findCoupon.isUsed === true) {
-                await bot.sendMessage(whatsappUserNumber, 'This coupon has already been used!');
+            } else if (findCoupon.isExpired === true) {
+              await bot.sendMessage(whatsappUserNumber, 'This coupon has expired!');
+              userState = 'START';
+              userStates.set(whatsappUserNumber, userState);
+            } else if (findCoupon && findCoupon.isUsed === false && findCoupon.isExpired === false) {
+              // Add to wallet balance, the amount!
+              const addCouponAmount = await utils.addAmountToUserWalletBalance(findCoupon.amount, whatsappUserNumber);
+              if (!addCouponAmount.status) {
+                await bot.sendMessage(whatsappUserNumber, responseMsgs.ERR_GENERAL_MSG);
                 userState = 'START';
                 userStates.set(whatsappUserNumber, userState);
-              } else if (findCoupon.isExpired === true) {
-                await bot.sendMessage(whatsappUserNumber, 'This coupon has expired!');
-
-                userState = 'START';
-
-                userStates.set(whatsappUserNumber, userState);
-              } else if (findCoupon && findCoupon.isUsed === false && findCoupon.isExpired === false) {
-                // Add to wallet balance, the amount!
-                const addCouponAmount = await utils.addAmountToUserWalletBalance(findCoupon.amount, whatsappUserNumber);
-                const findLink = await utils.findLink(findCoupon.couponCode);
-
-                if (addCouponAmount.status === true) {
-                  await bot.sendMessage(whatsappUserNumber, `${findCoupon.senderPhoneNo} has gifted you N${findCoupon.amount} and it has been added to your wallet balance!  \n\n Your wallet balance is now NGN${addCouponAmount.balance}! Enter B to buy your data and we will deduct it from this balance!`);
-
-                  const updateCoupon = await utils.updateCoupon(findCoupon.couponCode, whatsappUserNumber);
-                  const user = await utils.findCouponSenderByPhoneNo(findCoupon.senderPhoneNo);
-                  if (!user.email) {
-                    userState = 'START';
-                    userStates.set(whatsappUserNumber, userState);
-                    return await bot.sendMessage(whatsappUserNumber, 'An error occurred! Try again later!');
-                  }
-                  const senderEmail = user.email;
-                  const sendMailToSender = await mail.main('Coupon Code Used', `The link: ${MY_DOMAIN_NAME}/${findLink} has been used by ${whatsappUserNumber} and the N${findCoupon.amount} has been permanently deducted from your wallet balance! \n\n Your wallet balance is still NGN${addCouponAmount.balance}!, \n\n Thanks so much for your patronage. `, `${senderEmail}`);
-
-                  userState = 'START';
-                  userStates.set(whatsappUserNumber, userState);
-                } else {
-                  await bot.sendMessage(whatsappUserNumber, 'An error occured with finding the user in the database! Please try again later!');
-
-                  userState = 'START';
-                  userStates.set(whatsappUserNumber, userState);
-                }
-                // 'An error occured with finding the user in the database! Please try again later!';
+              } if (findCoupon.senderTG_Name) {
+                await bot.sendMessage(whatsappUserNumber, `${findCoupon.senderTG_Name} has gifted you N${findCoupon.amount} and it has been added to your wallet balance!  \n\n Your wallet balance is now NGN${addCouponAmount.balance}! Enter B to buy your data and we will deduct it from this balance!`);
               } else {
-                await bot.sendMessage(whatsappUserNumber, 'An error occured! Please try again later!');
-              }
-            } else {
-              await bot.sendMessage(whatsappUserNumber, 'Invalid coupon code!');
+                await bot.sendMessage(whatsappUserNumber, `You have been gifted with N${findCoupon.amount} and it has been added to your wallet balance!  \n\n Your wallet balance is now NGN${addCouponAmount.balance}! Enter B to buy your data and we will deduct it from this balance!`);
+                const updateCoupon = await utils.updateCoupon(findCoupon.couponCode, whatsappUserNumber);
+                // THis checks for telegram user ID instead..
+                const user = await utils.findCouponSenderByPhoneNo(findCoupon.senderTGID);
+                if (!user.email) {
+                  userState = 'START';
+                  userStates.set(whatsappUserNumber, userState);
+                  console.error('Error sending email to the sharer of data, there is an error, the sharer of data does not have email on their user profile.');
+                  logger.info(error);
+                }
+                const senderEmail = user.email;
+                const sendMailToSender = await mail.main('Coupon Code Used', `The link: ${TELEGRAM_BOT_USERNAME}/${findCoupon.couponCode} has been used by ${whatsappUserNumber} and the N${findCoupon.amount} has been permanently deducted from your wallet balance! \n\n Your wallet balance is still NGN${addCouponAmount.balance}!, \n\n Thanks so much for your patronage. `, `${senderEmail}`);
 
-              userState = 'START';
-              userStates.set(whatsappUserNumber, userState);
+                userState = 'START';
+                userStates.set(whatsappUserNumber, userState);
+
+                // 'An error occured with finding the user in the database! Please try again later!';
+              }
             }
-          } else {
-            await bot.sendMessage(`${whatsappUserNumber}`, 'Invalid coupon code!');
-            userState = 'START';
-            userStates.set(whatsappUserNumber, userState);
           }
         }
+
         userState = userStates.get(whatsappUserNumber) || 'START';
         const userInput = (msg.text || '').toUpperCase();
         console.log(userInput);
@@ -914,7 +898,7 @@ let userState;
                 const parseData = parseInt(msg.text, 10);
                 const coupons = await utils.storeCouponsToArray(whatsappUserNumber, amountToShare, parseData);
                 const newCoupons = await utils.saveCouponToDb(coupons);
-                const couponLinksArr = await utils.generateAndSaveLinks(data, network, newCoupons);
+                const couponLinksArr = await utils.generateAndSaveLinks(data, network, newCoupons, whatsappUserNumber);
                 const amountOfLinks = amountToShare * userInput;
 
                 // This is deducted from the user, kind of like, kept in escrow, if the user whom the link was sent to, doesn't claim the data in 2days time. The data will be returned back to the user.

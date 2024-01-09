@@ -15,5 +15,5 @@ const BusinessPricesSchema = new Schema({
     required: false,
   },
 });
-const businessPrices = mongoose.model('businessPrices', BusinessPricesSchema);
+const businessPrices = mongoose.model('businessprices_telegram', BusinessPricesSchema);
 module.exports = businessPrices;

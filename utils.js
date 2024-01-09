@@ -37,6 +37,7 @@ const { PHONE_NO_WHATSAPP_MSG } = process.env;
 const { MY_DOMAIN_NAME } = process.env;
 const { ROSSYTECH_API_KEY } = process.env;
 const { USER_ADMIN_EMAIL_ADDDR } = process.env;
+const { TELEGRAM_BOT_USERNAME } = process.env;
 
 const messageTemplate = 'Please press 1 to enter fund wallet\nPress 2 to Buy Data\nPress 3 to make inquiries or to make a bot for your business.';
 
@@ -511,7 +512,7 @@ async function generateLinkShortener(URL) {
   };
 }
 async function generateCouponCode() {
-  const length = 30;
+  const length = 5;
   const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
   let couponCode = '';
   for (let i = 0; i < length; i++) {
@@ -526,7 +527,7 @@ async function storeCouponsToArray(phoneNo, amount, numOfLinks) {
     const couponCode = await generateCouponCode();
     return {
       couponCode,
-      senderPhoneNo: phoneNo,
+      senderTGID: phoneNo,
       amount,
     };
   });
@@ -536,23 +537,18 @@ async function storeCouponsToArray(phoneNo, amount, numOfLinks) {
 
 async function saveCouponToDb(coupons) {
   try {
+    //
     const newCoupons = await couponCodes.insertMany(coupons);
     return newCoupons;
   } catch (err) {
     console.error(err);
   }
 }
-async function generateAndSaveLinks(data, network, coupons) {
+async function generateAndSaveLinks(data, network, coupons, whatsappUserNumber) {
   const URLS = [];
   const promises = coupons.map(async (coupon) => {
-    const URL = `/share/${data}/${network}?phoneNo=${coupon.senderPhoneNo}&couponCode=${coupon.couponCode}`;
-    const generatedURL = await generateLinkShortener(URL);
-    return generatedURL;
-  });
-  const linksArr = await Promise.all(promises);
-  const newLinks = await links.insertMany(linksArr);
-  newLinks.forEach((link) => {
-    URLS.push(`${MY_DOMAIN_NAME}/gift/${link.link}`);
+    const URL_1 = `${coupon.couponCode}`;
+    URLS.push(`${TELEGRAM_BOT_USERNAME}?start=${URL_1}-${whatsappUserNumber}`);
   });
   return URLS;
 }
@@ -632,7 +628,6 @@ async function updateCoupon(couponCode, whatsappUserNumber) {
 async function findCouponSenderByPhoneNo(senderPhoneNo) {
   try {
     const user = await Users.findOne({ phone: `${senderPhoneNo}` });
-    console.log(`user email is ${user.email}`);
     return user;
   } catch (err) {
     logger.error(`Error in finding coupon sender by phone no: ${err.message}`);
@@ -640,9 +635,9 @@ async function findCouponSenderByPhoneNo(senderPhoneNo) {
   }
 }
 
-async function findCoupon(coupon, senderPhoneNo) {
+async function findCoupon(coupon) {
   try {
-    const findCoupon = await couponCodes.findOne({ couponCode: `${coupon}`, senderPhoneNo: `${senderPhoneNo}` });
+    const findCoupon = await couponCodes.findOne({ couponCode: `${coupon}` });
     return findCoupon;
   } catch (err) {
     logger.error(`Error in finding coupon: ${err.message}`);

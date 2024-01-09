@@ -3,3 +3,5 @@ node_modules
 logs
 .env
 private
+test2.js
+

@@ -10,16 +10,17 @@ const CouponCodeSchema = new Schema({
     type: String,
     required: true,
   },
-  senderPhoneNo: {
+  senderTGID: {
     type: String,
     required: true,
+  },
+  senderTG_Name: {
+    type: String,
+    required: false,
   },
   amount: {
-    type: String,
+    type: Number,
     required: true,
-  },
-  expiryTime: {
-    type: Date,
   },
   isUsed: {
     type: Boolean,
@@ -40,12 +41,7 @@ const CouponCodeSchema = new Schema({
     type: Date,
     default: Date.now(),
   },
-  usedBy: {
-    type: String,
-    required: false,
-    default: '',
-  },
-  link: {
+  recipientID: {
     type: String,
     required: false,
     default: '',
@@ -59,16 +55,6 @@ const CouponCodeSchema = new Schema({
     type: String,
     required: false,
     default: '',
-  },
-  isCouponUsed: {
-    type: Boolean,
-    required: true,
-    default: false,
-  },
-  isCouponExpired: {
-    type: Boolean,
-    required: true,
-    default: false,
   },
   couponUsedDate: {
     type: Date,

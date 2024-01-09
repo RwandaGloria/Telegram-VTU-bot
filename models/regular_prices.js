@@ -14,5 +14,5 @@ const RegularPricesSchema = new Schema({
     required: false,
   },
 });
-const regularPrices = mongoose.model('regularPrices', RegularPricesSchema);
+const regularPrices = mongoose.model('regularprices_telegram', RegularPricesSchema);
 module.exports = regularPrices;
