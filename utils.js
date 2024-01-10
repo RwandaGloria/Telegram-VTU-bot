@@ -522,12 +522,14 @@ async function generateCouponCode() {
   return couponCode;
 }
 
-async function storeCouponsToArray(phoneNo, amount, numOfLinks) {
+async function storeCouponsToArray(phoneNo, amount, numOfLinks, data, network) {
   const promises = Array(numOfLinks).fill().map(async () => {
     const couponCode = await generateCouponCode();
     return {
       couponCode,
       senderTGID: phoneNo,
+      dataAmount: data,
+      network,
       amount,
     };
   });
@@ -544,14 +546,15 @@ async function saveCouponToDb(coupons) {
     console.error(err);
   }
 }
-async function generateAndSaveLinks(data, network, coupons, whatsappUserNumber) {
+async function generateAndSaveLinks(coupons, whatsappUserNumber) {
   const URLS = [];
-  const promises = coupons.map(async (coupon) => {
+  coupons.forEach((coupon) => {
     const URL_1 = `${coupon.couponCode}`;
     URLS.push(`${TELEGRAM_BOT_USERNAME}?start=${URL_1}-${whatsappUserNumber}`);
   });
   return URLS;
 }
+
 async function deductAmountFromUserWalletBalance(amount, whatsappUserNumber) {
   const user = await Users.findOne({ phone: whatsappUserNumber });
   const amountFloat = parseFloat(amount);
